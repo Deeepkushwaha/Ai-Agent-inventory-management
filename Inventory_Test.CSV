@@ -1,0 +1,31 @@
+product_id,product_name,current_stock,reorder_level,unit_price
+P101,Laptop,5,10,45000
+P102,Mouse,25,10,500
+P103,Keyboard,3,8,1200
+P104,Monitor,15,5,12000
+P105,Headphones,2,10,1800
+P106,Webcam,7,10,2500
+P107,Printer,4,12,8500
+P108,USB Cable,50,20,150
+P109,SSD 1TB,6,10,6500
+P110,Router,8,15,3200
+P111,Keyboard Wireless,18,10,1800
+P112,Power Bank,3,8,1500
+P113,HDMI Cable,35,15,300
+P114,External HDD,4,7,5500
+P115,Tablet,12,5,18000
+P116,Smartphone,6,10,25000
+P117,Desk Chair,20,8,7500
+P118,Office Desk,3,6,9500
+P119,Microphone,5,12,2200
+P120,Speakers,22,10,2800
+P121,Graphics Card,2,5,35000
+P122,RAM 16GB,9,15,4200
+P123,USB Hub,14,10,800
+P124,Projector,1,4,28000
+P125,Webcam HD,16,8,3200
+P126,Ethernet Cable,7,20,250
+P127,Laptop Charger,4,10,2200
+P128,Wireless Earbuds,11,15,3500
+P129,External SSD,13,5,7200
+P130,Bluetooth Adapter,2,8,600

@@ -1,0 +1,647 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "binaryPropertyName": "Upload_inventory_CSV",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        -112
+      ],
+      "id": "a931a87b-e269-49d2-a0fd-6e86f883b58e",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "formTitle": "Inventory Restock System",
+        "formDescription": "Upload your inventory CSV file to check stock levels.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload_inventory_CSV",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -704,
+        -112
+      ],
+      "id": "b4a2f055-040d-45c6-8fdf-f1be87aed895",
+      "name": "On form submission",
+      "webhookId": "24e1a40c-1c56-404a-a7f4-fbc957f459b1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1df3e65d-a752-4d3c-b12f-1144f202d8cf",
+              "leftValue": "={{ Number($json.current_stock) }}",
+              "rightValue": "={{ Number($json.reorder_level) }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        -112
+      ],
+      "id": "741e474e-77ed-4286-9da8-f9c7b6956a73",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nreturn $input.all().map(item => {\n  const p = item.json;\n\n  const currentStock = Number(p.current_stock);\n  const reorderLevel = Number(p.reorder_level);\n  const unitPrice = Number(p.unit_price);\n\n  return {\n    json: {\n      Product_ID: p.product_id,\n      product_name: p.product_name,\n      current_stock: currentStock,\n      reorder_level: reorderLevel,\n      unit_price: unitPrice,\n      units_needed: Math.max(0, reorderLevel - currentStock),\n      status: \"Low Stock\",\n      estimated_cost: Math.max(0, reorderLevel - currentStock) * unitPrice\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -304
+      ],
+      "id": "a45cd2ed-53a8-4ffb-88dd-a5ac318a437c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const p = item.json;\n\n  return {\n    json: {\n      Product_ID: p.product_id,\n      product_name: p.product_name,\n      current_stock: p.current_stock,\n      reorder_level: p.reorder_level,\n      unit_price: p.unit_price,\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        96
+      ],
+      "id": "d9f59914-a007-4687-a91c-1d57c53885e6",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Inventory Restock Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1731230298,
+          "mode": "list",
+          "cachedResultName": "Sufficient Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit#gid=1731230298"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Product_ID": "={{ $json.Product_ID }}",
+            "product_name": "={{ $json.product_name }}",
+            "current_stock": "={{ $json.current_stock }}",
+            "reorder_level": "={{ $json.reorder_level }}",
+            "unit_price": "={{ $json.unit_price }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Product_ID",
+              "displayName": "Product_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "product_name",
+              "displayName": "product_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "current_stock",
+              "displayName": "current_stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reorder_level",
+              "displayName": "reorder_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "unit_price",
+              "displayName": "unit_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        96
+      ],
+      "id": "9275778f-a7d2-4585-a71f-429945412e7f",
+      "name": "Sufficient Stock",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqxP2MC4GtdTVV8t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Inventory Restock Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Restock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Product_ID": "={{ $json.Product_ID }}",
+            "Product Name": "={{ $json.product_name }}",
+            "Current Stock": "={{ $json.current_stock }}",
+            "Reorder Level": "={{ $json.reorder_level }}",
+            "Unit Price": "={{ $json.unit_price }}",
+            "Units Needed": "={{ $json.units_needed }}",
+            "Status": "={{ $json.status }}",
+            "Estimated_Cost": "={{ $json.estimated_cost }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Product_ID",
+              "displayName": "Product_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reorder Level",
+              "displayName": "Reorder Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Units Needed",
+              "displayName": "Units Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estimated_Cost",
+              "displayName": "Estimated_Cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        -304
+      ],
+      "id": "d250ad8d-e381-4c4a-b7ad-823d2307f119",
+      "name": "Restock Report",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqxP2MC4GtdTVV8t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are an Inventory Management Assistant.\n\nYour job is to answer questions about inventory, low-stock products, restocking requirements, and sufficient-stock products.\n\nYou have access to two Google Sheets tools:\n1. Fetch Restock Data: Use this tool to retrieve products that require restocking.\n2. Fetch Sufficient Stock: Use this tool to retrieve products with sufficient stock.\n\nInstructions:\n- Understand the user's question before choosing a tool.\n- Use the appropriate Google Sheets tool to retrieve relevant data.\n- Do not invent product names, stock quantities, or costs.\n- If the user asks which products need restocking, retrieve the restock data.\n- If the user asks about sufficient stock, retrieve the sufficient-stock data.\n- If the requested data is unavailable, explain that clearly.\n- Present results in a clear table when appropriate.\n- Keep answers concise and professional."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        -192
+      ],
+      "id": "62016e71-b1f0-49f1-98b6-e350fb9c8a6d",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": "openrouter/free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        656,
+        96
+      ],
+      "id": "978d6d2a-eb9d-4617-ae78-19ca5e0fecd8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "XnL4crLskqMtYzVO",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "my_chat_assistant"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        800,
+        96
+      ],
+      "id": "1a2f8173-2afb-4eb2-ae90-d3aeae26d9a4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Inventory Restock Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1731230298,
+          "mode": "list",
+          "cachedResultName": "Sufficient Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit#gid=1731230298"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        96
+      ],
+      "id": "0833931d-73d1-465f-912c-6166a08ce762",
+      "name": "Fetch Restock Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqxP2MC4GtdTVV8t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Inventory Restock Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Restock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gB2Ly0Y9h0_Iu7jbJ1xt8HxYNUYHTo3DB76sCoTim78/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1200,
+        96
+      ],
+      "id": "0ec77758-672b-4d6b-ad6c-38b6be5d0f5b",
+      "name": "Fetch Sufficient Stock",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqxP2MC4GtdTVV8t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        432,
+        -144
+      ],
+      "id": "98b3b663-111d-44db-8dee-1d90de6b781b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "75f85c31-beae-471d-9302-aa5e5c507c6e",
+              "name": "chatInput",
+              "value": "Which products need restocking?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        -160
+      ],
+      "id": "0ba517a7-770b-4b3f-9e3c-e2fb32bf2f71",
+      "name": "Edit Fields",
+      "executeOnce": true,
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Restock Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Sufficient Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sufficient Stock": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Restock Report": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Restock Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Sufficient Stock": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  }
+}
